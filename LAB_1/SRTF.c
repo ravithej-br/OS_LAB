@@ -9,7 +9,7 @@ int main() {
     int AT[n], BT[n], RT[n], CT[n], TAT[n], WT[n], start[n];
     int i, time = 0, completed = 0, min, pos;
 
-    float avgCT=0, avgTAT=0, avgWT=0, avgRT=0;
+    float avgTAT=0, avgWT=0;
 
     for(i=0;i<n;i++){
         printf("Enter AT and BT for P%d: ",i+1);
@@ -45,10 +45,8 @@ int main() {
                 TAT[pos] = CT[pos] - AT[pos];
                 WT[pos] = TAT[pos] - BT[pos];
 
-                //avgCT += CT[pos];
                 avgTAT += TAT[pos];
                 avgWT += WT[pos];
-                //avgRT += (start[pos] - AT[pos]);
             }
         }
     }
@@ -60,10 +58,9 @@ int main() {
         printf("%-5d %-12d %-10d %-15d %-15d %-12d %-12d\n",
         i+1, AT[i], BT[i], CT[i], TAT[i], WT[i], start[i]-AT[i]);
 
-    //printf("\nAverage CT  = %.2f",avgCT/n);
     printf("\nAverage TurnAroundTime = %.2f",avgTAT/n);
     printf("\nAverage WaitingTime = %.2f",avgWT/n);
-    //printf("\nAverage RT  = %.2f\n",avgRT/n);
 
     return 0;
 }
+
