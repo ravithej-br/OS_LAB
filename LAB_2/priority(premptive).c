@@ -10,18 +10,21 @@ int main() {
   printf("Enter no. of processes: ");
   scanf("%d", &n);
 
+  printf("Enter arrival times: ");
   for (i = 0; i < n; i++) {
-    pid[i] = i + 1;
-
-    printf("Enter arrival time for process[%d]: ", i + 1);
     scanf("%d", &at[i]);
+  }
 
-    printf("Enter burst time for process[%d]: ", i + 1);
+  printf("Enter burst times: ");
+  for (i = 0; i < n; i++) {
     scanf("%d", &bt[i]);
     remt[i] = bt[i];
+  }
 
-    printf("Enter priority for process[%d]: ", i + 1);
+  printf("Enter priorities: ");
+  for (i = 0; i < n; i++) {
     scanf("%d", &p[i]);
+    pid[i] = i + 1;
   }
 
   printf("\nType:\n");
@@ -90,13 +93,15 @@ int main() {
   }
 
   // header row
-  printf("\nP\tAT\tBT\tPR\tCT\tTAT\tWT\tRT\n\n");
+  printf("\n%-6s %-6s %-6s %-6s %-6s %-6s %-6s %-6s\n",
+         "P", "AT", "BT", "PR", "CT", "TAT", "WT", "RT");
 
   // sorted by PID
   for (j = 1; j < n + 1; j++) {
     for (i = 0; i < n; i++) {
       if (pid[i] == j)
-        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", pid[i], at[i], bt[i], p[i],
+        printf("P%-5d %-6d %-6d %-6d %-6d %-6d %-6d %-6d\n",
+               pid[i], at[i], bt[i], p[i],
                ct[i], tat[i], wt[i], rt[i]);
     }
   }
