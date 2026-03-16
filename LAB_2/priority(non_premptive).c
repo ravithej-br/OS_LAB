@@ -1,78 +1,100 @@
 #include <stdio.h>
 
-int main()
-{
-    int n,i;
-    int pid[10],at[10],bt[10],pr[10];
-    int ct[10],tat[10],wt[10];
-    int finished[10]={0};
-    int current_time=0,completed=0,max;
-    float avg_tat=0,avg_wt=0;
+int main() {
+  printf("Name: RAVITHEJA B R\nUSN:1BM25CS503\n\n");
 
-    printf("Name:Ravithej B R\nUSN:1BM25CS503\n");
+  int n, curr_time = 0, pid[10], at[10], bt[10], p[10], ct[10], tat[10], wt[10],
+         st[10], rt[10], i, j, completed = 0, done[10] = {0}, choice;
+  double tat_sum = 0, wt_sum = 0;
 
-    printf("Enter number of processes: ");
-    scanf("%d",&n);
+  printf("Enter no. of processes: ");
+  scanf("%d", &n);
 
-    printf("Enter Arrival Time:\n");
-    for(i=0;i<n;i++)
-    {
-        pid[i]=i+1;
-        scanf("%d",&at[i]);
+  for (i = 0; i < n; i++) {
+    pid[i] = i + 1;
+
+    printf("Enter arrival time for process[%d]: ", i + 1);
+    scanf("%d", &at[i]);
+
+    printf("Enter burst time for process[%d]: ", i + 1);
+    scanf("%d", &bt[i]);
+
+    printf("Enter priority for process[%d]: ", i + 1);
+    scanf("%d", &p[i]);
+  }
+
+  printf("\nType:\n");
+  printf("1. Lower the number higher the priority\n");
+  printf("2. Higher the number higher the priority\n");
+  printf("Choice: ");
+  scanf("%d", &choice);
+
+  while (completed != n) {
+
+    int min = 99999999,  // to set with the lowest priority
+        max = -99999999, // to set with the highest priority
+        s = -1; // index of the process with the lowest/highest priority
+
+    for (i = 0; i < n; i++) {
+      // 1. AT is now or before current time
+      // 2. priority is lesser than min
+      // 3. process is not completed
+      if (choice == 1) {
+        if (at[i] <= curr_time && p[i] < min && !done[i]) {
+          min = p[i];
+          s = i;
+        }
+      }
+      if (choice == 2) {
+        if (at[i] <= curr_time && p[i] > max && !done[i]) {
+          max = p[i];
+          s = i;
+        }
+      }
     }
 
-    printf("Enter Burst Time:\n");
-    for(i=0;i<n;i++)
-        scanf("%d",&bt[i]);
-
-    printf("Enter Priority:\n");
-    for(i=0;i<n;i++)
-        scanf("%d",&pr[i]);
-
-    while(completed<n)
-    {
-        max=-1;
-
-        for(i=0;i<n;i++)
-        {
-            if(at[i]<=current_time && finished[i]==0)
-            {
-                if(max==-1 || pr[i]>pr[max])
-                    max=i;
-            }
-        }
-
-        if(max==-1)
-            current_time++;
-        else
-        {
-            ct[max]=current_time+bt[max];
-            tat[max]=ct[max]-at[max];
-            wt[max]=tat[max]-bt[max];
-
-            current_time=ct[max];
-
-            finished[max]=1;
-            completed++;
-
-            avg_tat+=tat[max];
-            avg_wt+=wt[max];
-        }
+    // CPU idle time
+    if (s == -1) {
+      curr_time++;
+      continue;
     }
 
-    printf("\nPriority Scheduling (Higher number = Higher priority)\n");
-    printf("PID\tAT\tBT\tPR\tCT\tTAT\tWT\n");
+    st[s] = curr_time;
+    curr_time += bt[s];
 
-    for(i=0;i<n;i++)
-        {
-            printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
-            pid[i],at[i],bt[i],pr[i],ct[i],tat[i],wt[i]);
-        }
+    // CT
+    ct[s] = curr_time;
 
+    // TAT
+    tat[s] = ct[s] - at[s];
+    tat_sum += tat[s];
 
-    printf("\nAverage Turnaround Time = %.2f",avg_tat/n);
-    printf("\nAverage Waiting Time = %.2f\n",avg_wt/n);
+    // WT
+    wt[s] = tat[s] - bt[s];
+    wt_sum += wt[s];
 
-    return 0;
+    // RT
+    rt[s] = st[s] - at[s];
+
+    // increment the completed processes count
+    completed++;
+    done[s] = 1;
+  }
+
+  // header row
+  printf("\nP\tAT\tBT\tPR\tCT\tTAT\tWT\tRT\n\n");
+
+  // sorted by PID
+  for (j = 1; j < n + 1; j++) {
+    for (i = 0; i < n; i++) {
+      if (pid[i] == j)
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", pid[i], at[i], bt[i], p[i],
+               ct[i], tat[i], wt[i], rt[i]);
+    }
+  }
+
+  printf("\nAverage TAT: %.2f\n", (tat_sum / n));
+  printf("Average WT: %.2f\n", (wt_sum / n));
+
+  return 0;
 }
-
