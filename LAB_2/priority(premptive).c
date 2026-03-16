@@ -1,80 +1,108 @@
 #include <stdio.h>
 
-int main()
-{
-    int n,i;
-    int pid[10],at[10],bt[10],pr[10],rt[10];
-    int ct[10],tat[10],wt[10];
-    int completed=0,current_time=0,min;
-    float avg_tat=0,avg_wt=0;
+int main() {
+    printf("Name: RAVITHEJA B R\nUSN:1BM25CS503\n\n");
 
-    printf("Name:Ravithej B R\nUSN:1BM25CS503\n");
+  int n, curr_time = 0, pid[10], at[10], bt[10], remt[10], p[10], ct[10],
+         tat[10], wt[10], st[10], rt[10], i, j, completed = 0, choice;
+  double tat_sum = 0, wt_sum = 0;
 
-    printf("Enter number of processes: ");
-    scanf("%d",&n);
+  printf("Enter no. of processes: ");
+  scanf("%d", &n);
 
-    printf("Enter Arrival Time:\n");
-    for(i=0;i<n;i++)
-    {
-        pid[i]=i+1;
-        scanf("%d",&at[i]);
-    }
+  for (i = 0; i < n; i++) {
+    pid[i] = i + 1;
 
-    printf("Enter Burst Time:\n");
-    for(i=0;i<n;i++)
-    {
-        scanf("%d",&bt[i]);
-        rt[i]=bt[i];
-    }
+    printf("Enter arrival time for process[%d]: ", i + 1);
+    scanf("%d", &at[i]);
 
-    printf("Enter Priority:\n");
-    for(i=0;i<n;i++)
-        scanf("%d",&pr[i]);
+    printf("Enter burst time for process[%d]: ", i + 1);
+    scanf("%d", &bt[i]);
+    remt[i] = bt[i];
 
-    while(completed<n)
-    {
-        min=-1;
+    printf("Enter priority for process[%d]: ", i + 1);
+    scanf("%d", &p[i]);
+  }
 
-        for(i=0;i<n;i++)
-        {
-            if(at[i]<=current_time && rt[i]>0)
-            {
-                if(min==-1 || pr[i] < pr[min])
-                    min=i;
-            }
+  printf("\nType:\n");
+  printf("1. Lower the number higher the priority\n");
+  printf("2. Higher the number higher the priority\n");
+  printf("Choice: ");
+  scanf("%d", &choice);
+
+  while (completed != n) {
+
+    int min = 99999999,  // to set with the lowest priority
+        max = -99999999, // to set with the highest priority
+        s = -1; // index of the process with the lowest/highest priority
+
+    for (i = 0; i < n; i++) {
+      // 1. AT is now or before current time
+      // 2. priority is lesser than min
+      // 3. there is some time remaining
+      if (choice == 1) {
+        if (at[i] <= curr_time && p[i] < min && remt[i] > 0) {
+          min = p[i];
+          s = i;
         }
-
-        if(min==-1)
-            current_time++;
-        else
-        {
-            rt[min]--;
-            current_time++;
-
-            if(rt[min]==0)
-            {
-                ct[min]=current_time;
-                tat[min]=ct[min]-at[min];
-                wt[min]=tat[min]-bt[min];
-
-                completed++;
-
-                avg_tat+=tat[min];
-                avg_wt+=wt[min];
-            }
+      }
+      if (choice == 2) {
+        if (at[i] <= curr_time && p[i] > max && remt[i] > 0) {
+          max = p[i];
+          s = i;
         }
+      }
     }
 
-    printf("\nPriority Scheduling (Preemptive) Higher the Number, Higher the Priority\n");
-    printf("PID\tAT\tBT\tPR\tCT\tTAT\tWT\n");
+    // CPU idle time
+    if (s == -1) {
+      curr_time++;
+      continue;
+    }
 
-    for(i=0;i<n;i++)
-        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
-        pid[i],at[i],bt[i],pr[i],ct[i],tat[i],wt[i]);
+    // if the process is in the CPU for the first time
+    if (remt[s] == bt[s])
+      st[s] = curr_time;
 
-    printf("\nAverage Turnaround Time = %.2f",avg_tat/n);
-    printf("\nAverage Waiting Time = %.2f\n",avg_wt/n);
+    // decrement the remaining time of the process
+    remt[s]--;
 
-    return 0;
+    // if the process has completed
+    if (remt[s] == 0) {
+      // CT
+      ct[s] = curr_time + 1;
+
+      // TAT
+      tat[s] = ct[s] - at[s];
+      tat_sum += tat[s];
+
+      // WT
+      wt[s] = tat[s] - bt[s];
+      wt_sum += wt[s];
+
+      // RT
+      rt[s] = st[s] - at[s];
+
+      // increment the completed processes count
+      completed++;
+    }
+    curr_time++;
+  }
+
+  // header row
+  printf("\nP\tAT\tBT\tPR\tCT\tTAT\tWT\tRT\n\n");
+
+  // sorted by PID
+  for (j = 1; j < n + 1; j++) {
+    for (i = 0; i < n; i++) {
+      if (pid[i] == j)
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", pid[i], at[i], bt[i], p[i],
+               ct[i], tat[i], wt[i], rt[i]);
+    }
+  }
+
+  printf("\nAverage TAT: %.2f\n", (tat_sum / n));
+  printf("Average WT: %.2f\n", (wt_sum / n));
+
+  return 0;
 }
-
